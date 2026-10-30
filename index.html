@@ -1,0 +1,862 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jungle Run - The Historical Adventure</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #123524, #286044, #8b9b45);
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: rgba(10, 35, 24, 0.95);
+    border: 3px solid #d8b45b;
+    border-radius: 22px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+h1 {
+    color: #ffd76a;
+    font-size: clamp(28px, 5vw, 46px);
+}
+
+.subtitle {
+    text-align: center;
+    color: #d9e9c8;
+    margin-bottom: 20px;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.hero {
+    text-align: center;
+    padding: 25px 10px;
+}
+
+.hero .jungle-icon {
+    font-size: 75px;
+    margin: 15px;
+}
+
+.description {
+    line-height: 1.7;
+    text-align: center;
+    margin: 15px auto;
+    max-width: 650px;
+}
+
+button {
+    background: #e5b94f;
+    color: #173c2a;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 7px;
+    transition: .2s;
+}
+
+button:hover {
+    background: #ffda75;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.main-button {
+    display: block;
+    margin: 20px auto;
+    min-width: 180px;
+}
+
+.info-box {
+    background: #254b35;
+    border: 1px solid #799c64;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 15px 0;
+    line-height: 1.7;
+}
+
+.level-map {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.level-card {
+    background: #315d3d;
+    border: 2px solid #d8b45b;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.level-card.locked {
+    opacity: .4;
+}
+
+.status {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #254b35;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.progress-container {
+    height: 12px;
+    background: #536d4d;
+    border-radius: 20px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #f5cc58;
+    transition: .3s;
+}
+
+.question-box {
+    background: #f5f0d8;
+    color: #183b28;
+    border-radius: 15px;
+    padding: 22px;
+    margin: 15px 0;
+}
+
+.question-box h3 {
+    text-align: left;
+    line-height: 1.5;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    background: #dce7cf;
+    color: #173c2a;
+    text-align: left;
+    margin: 10px 0;
+    border: 2px solid transparent;
+}
+
+.option:hover {
+    background: #c6d9ae;
+}
+
+.option.correct {
+    background: #8bd49b;
+    border-color: #26733b;
+}
+
+.option.wrong {
+    background: #f2a09a;
+    border-color: #a52c2c;
+}
+
+.feedback {
+    display: none;
+    background: #315d3d;
+    border-left: 5px solid #e5b94f;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 10px;
+    line-height: 1.6;
+}
+
+.feedback.show {
+    display: block;
+}
+
+.center {
+    text-align: center;
+}
+
+.result-score {
+    font-size: 50px;
+    color: #ffd76a;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px;
+}
+
+footer {
+    text-align: center;
+    color: #d9e9c8;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+@media(max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .level-map {
+        grid-template-columns: 1fr;
+    }
+
+    .status {
+        justify-content: center;
+        text-align: center;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HALAMAN PEMBUKA -->
+<section id="home" class="screen active">
+    <div class="hero">
+        <div class="jungle-icon">🌴🧭🏆</div>
+        <h1>JUNGLE RUN</h1>
+        <h2>THE HISTORICAL ADVENTURE</h2>
+        <p class="subtitle">Petualangan Menjelajahi Sejarah Kolonialisme Indonesia</p>
+
+        <div class="description">
+            <p><b>Media Pembelajaran Interaktif IPS Sejarah</b></p>
+            <p>Kelas VIII SMP Plus Jauharul Maknuun IBS Gresik</p>
+            <p>Penyusun: Endah Retno Sayekti</p>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 Misi Petualangan</h3>
+            <p>
+                Jelajahi hutan sejarah, kumpulkan artefak,
+                jawab tantangan, dan buktikan kemampuanmu
+                memahami kolonialisme serta perjuangan bangsa Indonesia!
+            </p>
+        </div>
+
+        <button class="main-button" onclick="showInstructions()">
+            📜 PETUNJUK PERMAINAN
+        </button>
+        <button class="main-button" onclick="startGame()">
+            🚀 MULAI PETUALANGAN
+        </button>
+    </div>
+</section>
+
+<!-- PETUNJUK -->
+<section id="instructions" class="screen">
+    <h1>📜 PETUNJUK PERMAINAN</h1>
+
+    <div class="info-box">
+        <p>1. Game terdiri dari 4 level dan 20 soal.</p>
+        <p>2. Setiap level memiliki 5 soal pilihan ganda.</p>
+        <p>3. Setiap pemain memiliki 3 nyawa ❤️❤️❤️.</p>
+        <p>4. Jawaban benar memperoleh 5 poin.</p>
+        <p>5. Jawaban salah atau waktu habis mengurangi 1 nyawa.</p>
+        <p>6. Waktu menjawab setiap soal adalah 30 detik.</p>
+        <p>7. Selesaikan 5 soal untuk membuka level berikutnya.</p>
+        <p>8. Jika nyawa habis, permainan berakhir.</p>
+        <p>9. Pembahasan akan muncul setelah jawaban dipilih.</p>
+    </div>
+
+    <button class="main-button" onclick="startGame()">MULAI GAME</button>
+    <button class="main-button" onclick="showScreen('home')">KEMBALI</button>
+</section>
+
+<!-- PETA LEVEL -->
+<section id="levels" class="screen">
+    <h1>🗺️ PETA PETUALANGAN</h1>
+    <p class="subtitle">Pilih perjalanan sejarahmu!</p>
+
+    <div class="level-map">
+        <div class="level-card">
+            <h3>🌊 LEVEL 1</h3>
+            <p>The Gate of Exploration</p>
+            <small>Kedatangan Bangsa Barat</small>
+        </div>
+
+        <div class="level-card">
+            <h3>🏰 LEVEL 2</h3>
+            <p>The Colonial Jungle</p>
+            <small>Kebijakan Kolonial</small>
+        </div>
+
+        <div class="level-card">
+            <h3>⚔️ LEVEL 3</h3>
+            <p>The Warrior's Forest</p>
+            <small>Perang Padri & Diponegoro</small>
+        </div>
+
+        <div class="level-card">
+            <h3>🔥 LEVEL 4</h3>
+            <p>The Final Battle</p>
+            <small>Buleleng & Perang Aceh</small>
+        </div>
+    </div>
+
+    <button class="main-button" onclick="showScreen('game')">
+        LANJUTKAN PETUALANGAN
+    </button>
+</section>
+
+<!-- HALAMAN GAME -->
+<section id="game" class="screen">
+    <h2 id="levelTitle">LEVEL 1</h2>
+
+    <div class="status">
+        <span>⭐ Skor: <span id="score">0</span></span>
+        <span>❤️ Nyawa: <span id="lives">❤️❤️❤️</span></span>
+        <span>⏱️ Waktu: <span id="timer">30</span>s</span>
+        <span>Soal: <span id="questionNumber">1/20</span></span>
+    </div>
+
+    <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <div class="question-box">
+        <h3 id="questionText">Pertanyaan akan muncul di sini.</h3>
+        <div id="options"></div>
+
+        <div id="feedback" class="feedback"></div>
+
+        <div class="center">
+            <button id="nextButton" style="display:none" onclick="nextQuestion()">
+                SOAL BERIKUTNYA ➜
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- LEVEL UP -->
+<section id="levelup" class="screen center">
+    <div class="jungle-icon">🏆🌟</div>
+    <h1>LEVEL UP!</h1>
+    <h2 id="levelUpTitle">Kamu berhasil!</h2>
+    <div class="info-box">
+        <p>Hebat! Kamu berhasil menyelesaikan tantangan.</p>
+        <p>Kamu mendapatkan artefak sejarah baru!</p>
+        <h2>🏺 ARTEFAK TERKUMPUL</h2>
+    </div>
+    <button class="main-button" onclick="continueLevel()">LANJUT KE LEVEL BERIKUTNYA</button>
+</section>
+
+<!-- GAME OVER -->
+<section id="gameover" class="screen center">
+    <div class="jungle-icon">🌧️💔</div>
+    <h1>GAME OVER</h1>
+    <p>Petualanganmu terhenti karena seluruh nyawa telah habis.</p>
+    <p>Tetap semangat! Coba lagi dan pelajari pembahasannya.</p>
+    <button class="main-button" onclick="startGame()">ULANGI PERMAINAN</button>
+    <button class="main-button" onclick="showScreen('home')">MENU UTAMA</button>
+</section>
+
+<!-- HASIL AKHIR -->
+<section id="result" class="screen">
+    <div class="hero">
+        <div class="jungle-icon">🏆🎉</div>
+        <h1>PETUALANGAN SELESAI!</h1>
+        <p class="subtitle">Selamat! Kamu telah menyelesaikan Jungle Run.</p>
+
+        <div class="result-score" id="finalScore">0</div>
+        <h2 id="rank">Rookie Explorer</h2>
+
+        <div class="info-box">
+            <p>✅ Jawaban Benar: <b id="correctCount">0</b></p>
+            <p>❌ Jawaban Salah: <b id="wrongCount">0</b></p>
+            <p>❤️ Sisa Nyawa: <b id="remainingLives">0</b></p>
+            <p>🗺️ Level Tertinggi: <b id="highestLevel">0</b></p>
+        </div>
+
+        <button class="main-button" onclick="startGame()">MAIN LAGI</button>
+        <button class="main-button" onclick="showScreen('home')">MENU UTAMA</button>
+    </div>
+</section>
+
+<footer>
+    JUNGLE RUN: THE HISTORICAL ADVENTURE<br>
+    Media Pembelajaran IPS Sejarah | SMP Plus Jauharul Maknuun IBS Gresik
+</footer>
+
+</div>
+
+<script>
+
+// ======================================
+// BANK SOAL: 4 LEVEL, 20 PERTANYAAN
+// ======================================
+
+const questions = [
+
+{
+level: 1,
+title: "The Gate of Exploration",
+q: "Salah satu alasan utama bangsa Eropa datang ke Nusantara adalah untuk mencari ...",
+a: ["Batu bara", "Rempah-rempah", "Hasil perkebunan teh", "Tenaga kerja industri"],
+correct: 1,
+explanation: "Rempah-rempah seperti lada, pala, dan cengkih memiliki nilai ekonomi tinggi di pasar Eropa."
+},
+{
+level: 1,
+q: "Bangsa Eropa yang pertama kali tiba di Maluku untuk mencari rempah-rempah adalah ...",
+a: ["Inggris", "Belanda", "Portugis", "Prancis"],
+correct: 2,
+explanation: "Portugis mencapai Maluku pada 1512 setelah menguasai Malaka pada 1511."
+},
+{
+level: 1,
+q: "Istilah kolonialisme merujuk pada tindakan ...",
+a: ["Membangun kerja sama setara", "Menguasai wilayah lain untuk kepentingan penjajah", "Melakukan pertukaran budaya", "Membentuk organisasi perdagangan lokal"],
+correct: 1,
+explanation: "Kolonialisme merupakan praktik penguasaan suatu wilayah oleh bangsa lain untuk kepentingan politik, ekonomi, dan kekuasaan."
+},
+{
+level: 1,
+q: "Imperialisme pada dasarnya bertujuan untuk ...",
+a: ["Memperluas kekuasaan dan pengaruh", "Menghapus seluruh perdagangan", "Membatasi hubungan antarnegara", "Mendorong pemerintahan mandiri"],
+correct: 0,
+explanation: "Imperialisme adalah kebijakan memperluas kekuasaan atau pengaruh suatu negara terhadap wilayah lain."
+},
+{
+level: 1,
+q: "Salah satu faktor yang mendorong penjelajahan samudra bangsa Eropa dikenal dengan semboyan Gold, Gospel, Glory. Glory berarti ...",
+a: ["Mencari kekayaan", "Menyebarkan agama", "Mencari kejayaan dan kekuasaan", "Mengembangkan pertanian"],
+correct: 2,
+explanation: "Gold berarti kekayaan, Gospel berarti penyebaran agama, dan Glory berarti kejayaan atau kemuliaan."
+},
+
+{
+level: 2,
+title: "The Colonial Jungle",
+q: "VOC didirikan oleh Belanda pada tahun ...",
+a: ["1511", "1602", "1799", "1830"],
+correct: 1,
+explanation: "VOC didirikan pada tahun 1602 sebagai kongsi dagang Belanda di kawasan Asia."
+},
+{
+level: 2,
+q: "Tujuan utama VOC menerapkan monopoli perdagangan adalah ...",
+a: ["Meningkatkan kebebasan pedagang lokal", "Mengendalikan perdagangan dan memperoleh keuntungan besar", "Menghapus perdagangan rempah-rempah", "Membantu petani menentukan harga"],
+correct: 1,
+explanation: "Monopoli memungkinkan VOC menguasai perdagangan dan mengendalikan harga komoditas."
+},
+{
+level: 2,
+q: "Politik divide et impera yang digunakan penjajah berarti ...",
+a: ["Kerja sama antarkerajaan", "Politik balas budi", "Memecah belah untuk melemahkan lawan", "Perdagangan bebas"],
+correct: 2,
+explanation: "Divide et impera adalah strategi memecah belah kelompok atau kekuatan lokal agar mudah dikuasai."
+},
+{
+level: 2,
+q: "Jalan Raya Anyer–Panarukan dibangun pada masa pemerintahan ...",
+a: ["Daendels", "Van den Bosch", "Raffles", "Van Heutsz"],
+correct: 0,
+explanation: "Herman Willem Daendels memerintah sejak 1808 dan membangun jalan tersebut untuk kepentingan pertahanan serta administrasi."
+},
+{
+level: 2,
+q: "Kebijakan Cultuurstelsel atau Tanam Paksa mulai diterapkan pada tahun 1830 oleh ...",
+a: ["Daendels", "Van den Bosch", "Cornelis de Houtman", "Jan Pieterszoon Coen"],
+correct: 1,
+explanation: "Cultuurstelsel diterapkan pada 1830 oleh Gubernur Jenderal Johannes van den Bosch."
+},
+
+{
+level: 3,
+title: "The Warrior's Forest",
+q: "Perang Padri berlangsung pada tahun ...",
+a: ["1808–1811", "1821–1838", "1825–1830", "1873–1904"],
+correct: 1,
+explanation: "Perang Padri berlangsung pada 1821–1838 di wilayah Sumatra Barat."
+},
+{
+level: 3,
+q: "Tokoh utama yang dikenal memimpin perlawanan dalam Perang Padri adalah ...",
+a: ["Pangeran Diponegoro", "Tuanku Imam Bonjol", "Teuku Umar", "Pattimura"],
+correct: 1,
+explanation: "Tuanku Imam Bonjol merupakan salah satu tokoh utama perlawanan terhadap Belanda dalam Perang Padri."
+},
+{
+level: 3,
+q: "Salah satu penyebab Perang Diponegoro adalah ...",
+a: ["Pembangunan jalan yang melewati makam leluhur Diponegoro", "Perebutan rempah-rempah di Maluku", "Pelarangan perdagangan di Aceh", "Perselisihan hak tawan karang"],
+correct: 0,
+explanation: "Pemasangan patok jalan yang melewati tanah dan makam leluhur Diponegoro menjadi pemicu langsung perlawanan pada 1825."
+},
+{
+level: 3,
+q: "Perang Diponegoro berlangsung pada tahun ...",
+a: ["1811–1816", "1821–1838", "1825–1830", "1846–1849"],
+correct: 2,
+explanation: "Perang Diponegoro berlangsung pada 1825–1830 di Jawa."
+},
+{
+level: 3,
+q: "Strategi Benteng Stelsel yang digunakan Belanda bertujuan untuk ...",
+a: ["Memperluas wilayah pertanian", "Mempersempit ruang gerak pasukan lawan", "Meningkatkan perdagangan rakyat", "Membangun pusat pendidikan"],
+correct: 1,
+explanation: "Benteng Stelsel dilakukan dengan membangun benteng-benteng untuk mempersempit ruang gerak pasukan perlawanan."
+},
+
+{
+level: 4,
+title: "The Final Battle",
+q: "Perlawanan Puputan Buleleng terjadi di wilayah ...",
+a: ["Sumatra Barat", "Aceh", "Bali", "Jawa Tengah"],
+correct: 2,
+explanation: "Puputan Buleleng merupakan salah satu perlawanan masyarakat Bali terhadap ekspedisi militer Belanda."
+},
+{
+level: 4,
+q: "Salah satu persoalan yang melatarbelakangi konflik Buleleng dengan Belanda adalah ...",
+a: ["Hak tawan karang", "Sistem tanam paksa", "Pembangunan Jalan Anyer–Panarukan", "Monopoli kopi"],
+correct: 0,
+explanation: "Hak tawan karang merupakan adat yang berkaitan dengan kapal terdampar dan menjadi salah satu sumber konflik dengan Belanda."
+},
+{
+level: 4,
+q: "Perang Aceh dimulai pada tahun ...",
+a: ["1821", "1825", "1846", "1873"],
+correct: 3,
+explanation: "Belanda memulai serangan terhadap Kesultanan Aceh pada tahun 1873."
+},
+{
+level: 4,
+q: "Tokoh perempuan yang dikenal memimpin perjuangan rakyat Aceh adalah ...",
+a: ["Cut Nyak Dien", "R.A. Kartini", "Dewi Sartika", "Martha Christina Tiahahu"],
+correct: 0,
+explanation: "Cut Nyak Dien merupakan salah satu tokoh perempuan penting dalam perjuangan rakyat Aceh melawan Belanda."
+},
+{
+level: 4,
+q: "Nilai utama yang dapat diteladani dari berbagai perlawanan terhadap kolonialisme adalah ...",
+a: ["Mengutamakan kepentingan pribadi", "Mudah menyerah ketika menghadapi kesulitan", "Persatuan, keberanian, dan cinta tanah air", "Menghindari tanggung jawab"],
+correct: 2,
+explanation: "Berbagai perlawanan menunjukkan nilai keberanian, persatuan, keteguhan, dan cinta tanah air."
+}
+
+];
+
+// ======================================
+// VARIABEL PERMAINAN
+// ======================================
+
+let currentQuestion = 0;
+let score = 0;
+let lives = 3;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let timer = 30;
+let timerInterval = null;
+let answered = false;
+let highestLevel = 1;
+
+const levelNames = {
+    1: "The Gate of Exploration",
+    2: "The Colonial Jungle",
+    3: "The Warrior's Forest",
+    4: "The Final Battle"
+};
+
+// ======================================
+// NAVIGASI HALAMAN
+// ======================================
+
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+}
+
+function showInstructions() {
+    showScreen("instructions");
+}
+
+// ======================================
+// MEMULAI PERMAINAN
+// ======================================
+
+function startGame() {
+    currentQuestion = 0;
+    score = 0;
+    lives = 3;
+    correctAnswers = 0;
+    wrongAnswers = 0;
+    highestLevel = 1;
+
+    showScreen("game");
+    loadQuestion();
+}
+
+// ======================================
+// MENAMPILKAN SOAL
+// ======================================
+
+function loadQuestion() {
+    clearInterval(timerInterval);
+
+    if (lives <= 0) {
+        gameOver();
+        return;
+    }
+
+    if (currentQuestion >= questions.length) {
+        showResult();
+        return;
+    }
+
+    answered = false;
+    timer = 30;
+
+    const data = questions[currentQuestion];
+
+    document.getElementById("levelTitle").textContent =
+        "LEVEL " + data.level + " — " + levelNames[data.level];
+
+    document.getElementById("questionText").textContent =
+        (currentQuestion + 1) + ". " + data.q;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent =
+        "❤️".repeat(lives);
+
+    document.getElementById("timer").textContent = timer;
+    document.getElementById("questionNumber").textContent =
+        (currentQuestion + 1) + "/20";
+
+    document.getElementById("progressBar").style.width =
+        ((currentQuestion / questions.length) * 100) + "%";
+
+    document.getElementById("feedback").classList.remove("show");
+    document.getElementById("nextButton").style.display = "none";
+
+    const options = document.getElementById("options");
+    options.innerHTML = "";
+
+    data.a.forEach((option, index) => {
+        const button = document.createElement("button");
+
+        button.className = "option";
+        button.textContent =
+            String.fromCharCode(65 + index) + ". " + option;
+
+        button.onclick = () => checkAnswer(index, button);
+
+        options.appendChild(button);
+    });
+
+    startTimer();
+}
+
+// ======================================
+// TIMER
+// ======================================
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timer--;
+
+        document.getElementById("timer").textContent = timer;
+
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            checkAnswer(-1, null);
+        }
+    }, 1000);
+}
+
+// ======================================
+// MEMERIKSA JAWABAN
+// ======================================
+
+function checkAnswer(selected, selectedButton) {
+    if (answered) return;
+
+    answered = true;
+    clearInterval(timerInterval);
+
+    const data = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option");
+
+    buttons.forEach(button => button.disabled = true);
+
+    const feedback = document.getElementById("feedback");
+
+    if (selected === data.correct) {
+        score += 5;
+        correctAnswers++;
+
+        selectedButton.classList.add("correct");
+
+        feedback.innerHTML =
+            "<b>✅ JAWABAN BENAR!</b><br>" +
+            "Kamu mendapatkan 5 poin.<br><br>" +
+            "<b>Pembahasan:</b> " + data.explanation;
+
+    } else {
+        lives--;
+        wrongAnswers++;
+
+        if (selectedButton) {
+            selectedButton.classList.add("wrong");
+        }
+
+        buttons[data.correct].classList.add("correct");
+
+        feedback.innerHTML =
+            "<b>❌ JAWABAN KURANG TEPAT!</b><br>" +
+            (selected === -1
+                ? "Waktu habis!"
+                : "Jawaban yang benar adalah: " +
+                  data.a[data.correct]) +
+            "<br><br><b>Pembahasan:</b> " +
+            data.explanation;
+    }
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent =
+        "❤️".repeat(lives);
+
+    feedback.classList.add("show");
+
+    document.getElementById("nextButton").style.display =
+        "inline-block";
+
+    document.getElementById("nextButton").textContent =
+        lives <= 0 ? "LIHAT HASIL" : "SOAL BERIKUTNYA ➜";
+}
+
+// ======================================
+// SOAL BERIKUTNYA DAN LEVEL UP
+// ======================================
+
+function nextQuestion() {
+    if (lives <= 0) {
+        gameOver();
+        return;
+    }
+
+    const completedLevel = questions[currentQuestion].level;
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+        showResult();
+        return;
+    }
+
+    const nextLevel = questions[currentQuestion].level;
+
+    if (nextLevel > completedLevel) {
+        highestLevel = Math.max(highestLevel, nextLevel);
+
+        document.getElementById("levelUpTitle").textContent =
+            "Selamat! Kamu berhasil membuka " + levelNames[nextLevel];
+
+        showScreen("levelup");
+    } else {
+        loadQuestion();
+    }
+}
+
+function continueLevel() {
+    showScreen("game");
+    loadQuestion();
+}
+
+// ======================================
+// GAME OVER
+// ======================================
+
+function gameOver() {
+    clearInterval(timerInterval);
+    showScreen("gameover");
+}
+
+// ======================================
+// HASIL AKHIR
+// ======================================
+
+function showResult() {
+    clearInterval(timerInterval);
+
+    let rank = "";
+
+    if (score >= 90) {
+        rank = "🏆 Master Explorer";
+    } else if (score >= 80) {
+        rank = "🌟 Expert Historian";
+    } else if (score >= 70) {
+        rank = "⚔️ Brave Adventurer";
+    } else if (score >= 60) {
+        rank = "🧭 Junior Explorer";
+    } else {
+        rank = "🌱 Rookie Explorer";
+    }
+
+    document.getElementById("finalScore").textContent =
+        score + "/100";
+
+    document.getElementById("rank").textContent = rank;
+
+    document.getElementById("correctCount").textContent =
+        correctAnswers;
+
+    document.getElementById("wrongCount").textContent =
+        wrongAnswers;
+
+    document.getElementById("remainingLives").textContent =
+        lives;
+
+    document.getElementById("highestLevel").textContent =
+        highestLevel;
+
+    document.getElementById("progressBar").style.width = "100%";
+
+    showScreen("result");
+}
+
+</script>
+
+</body>
+</html>
